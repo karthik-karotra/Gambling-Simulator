@@ -3,25 +3,40 @@ echo "Welcome to Gambling Simulation"
 
 #CONSTANTS
 BET=1
-MINIMUMLIMIT=50
-MAXIMUMLIMIT=150
+MINIMUM_LIMIT=50
+MAXIMUM_LIMIT=150
 
 #VARIABLES
 stake=100
+winningAmount=0
+looseingAmount=0
 
-while [[ $stake -ne $MINIMUMLIMIT && $stake -ne $MAXIMUMLIMIT ]]
+for((i=1;i<=20;i++))
 do
-	if [ $((RANDOM%2)) -eq 1 ]
+	while [[ $stake -ne $MINIMUM_LIMIT && $stake -ne $MAXIMUM_LIMIT ]]
+	do
+		if [ $((RANDOM%2)) -eq 1 ]
+		then
+			stake=$(($stake+$BET))
+		else
+			stake=$(($stake-$BET))
+		fi
+	done
+	if [ $stake -eq $MINIMUM_LIMIT ]
 	then
-		stake=$(($stake+$BET))
+		loosingAmount=$(($loosingAmount + 50))
+		stake=100
 	else
-		stake=$(($stake-$BET))
+		winningAmount=$(($winningAmount+50))
+		stake=100
 	fi
 done
-
-if [ $stake -eq $MINIMUMLIMIT ]
+if [ $winningAmount -gt $loosingAmount ]
 then
-	echo "You have lost 50% of your daily stake.Its better you resign for the day"
+	echo  "You won by $(($winningAmount - $loosingAmount)) Rs in 20 days"
+elif [ $winningAmount -lt $loosingAmount ]
+then
+	echo "You lost by $(($loosingAmount - $winningAmount)) Rs in 20 days"
 else
-	echo "Bravo!!! You reached your goal. "
+	echo "You neither lose nor win"
 fi
