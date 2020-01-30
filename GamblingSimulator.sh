@@ -1,7 +1,9 @@
 #!/bin/bash
+echo "Welcome to Gambling Simulation"
+
+#DICTIONARIES
 declare -A checkLuckiestUnluckiest
 declare -A winOrLooseDictionary
-echo "Welcome to Gambling Simulation"
 
 #VARIABLES
 stake=100
@@ -14,8 +16,8 @@ currentAmount=0
 #CONSTANTS
 PERCENTAGE=50
 BET=1
-MINIMUM_LIMIT=$(($(($PERCENTAGE*$stake/100)) + $stake))
-MAXIMUM_LIMIT=$(($stake - $(($PERCENTAGE*$stake/100))))
+MAXIMUM_LIMIT=$(($(($PERCENTAGE*$stake/100)) + $stake))
+MINIMUM_LIMIT=$(($stake - $(($PERCENTAGE*$stake/100))))
 NO_OF_DAYS=20
 
 function bet() {
@@ -27,10 +29,10 @@ function bet() {
 	fi
 }
 
-function WinOrLoose() {
+function winOrLoose() {
 	if [ $stake -eq $MINIMUM_LIMIT ]
 	then
-		loosingAmount=$(($loosingAmount + 50))
+		looseingAmount=$(($looseingAmount + 50))
 		stake=100
 		(( lostCount++ ))
 		currentAmount=$(($currentAmount-50))
@@ -43,22 +45,23 @@ function WinOrLoose() {
 		winOrLooseDictionary[$1]="Win"
 	fi
 }
+
 function playGame() {
 	for((i=1;i<=$NO_OF_DAYS;i++))
 	do
-		while [[ $cashInHand -lt $WINNING_LIMIT && $cashInHand -gt $LOOSING_LIMIT ]]
+		while [[ $stake -lt $MAXIMUM_LIMIT && $stake -gt $MINIMUM_LIMIT ]]
 		do
 			bet
 		done
-		WinOrLoose $i
-		amountPerDay[$i]=$currentAmount
+		winOrLoose $i
+		checkLuckiestUnluckiest[$i]=$currentAmount
 	done
-	if [ $winningAmount -gt $loosingAmount ]
+	if [ $winningAmount -gt $looseingAmount ]
 	then
-		echo  "You won by $(($winningAmount - $loosingAmount)) Rs in 20 days"
-	elif [ $winningAmount -lt $loosingAmount ]
+		echo  "You won by $(($winningAmount - $looseingAmount)) Rs in 20 days"
+	elif [ $winningAmount -lt $looseingAmount ]
 	then
-		echo "You lost by $(($loosingAmount - $winningAmount)) Rs in 20 days"
+		echo "You lost by $(($looseingAmount - $winningAmount)) Rs in 20 days"
 	else
 		echo "You neither lose nor win"
 	fi
@@ -66,7 +69,7 @@ function playGame() {
 	echo "No of days Gambler won is $wonCount"
 	echo "No of days Gambler lost is $lostCount"
 	echo "Total Amount won is $winningAmount"
-	echo "Total amount lost is $loosingAmount"
+	echo "Total amount lost is $looseingAmount"
 	echo "Keys : ${!checkLuckiestUnluckiest[@]}"
 	echo "Amount per day : ${checkLuckiestUnluckiest[@]}"
 	echo "Keys : ${!winOrLooseDictionary[@]}"
@@ -94,12 +97,12 @@ do
 		then
 			echo "next month"
 			winningAmount=0
-			loosingAmount=0
+			looseingAmount=0
 			wonCount=0
-			lostCount=0currentAmount=0
+			lostCount=0
+			currentAmount=0
 		else
 			break
 		fi
 	fi
 done
-
